@@ -107,6 +107,10 @@ class SelfCollisionCost(BaseCost):
         """
         self.validate_input(robot_spheres)
 
+        sphere_padding = self.config.self_collision_kin_config.sphere_padding
+        if self.config.activation_distance > 0.0:
+            sphere_padding = sphere_padding + 0.5 * self.config.activation_distance
+
         dist = SelfCollisionDistance.apply(
             robot_spheres,
             self._out_distance,
@@ -114,7 +118,7 @@ class SelfCollisionCost(BaseCost):
             self._pair_distance,
             self._sparse_sphere_idx,
             self._weight,
-            self.config.self_collision_kin_config.sphere_padding,
+            sphere_padding,
             self.config.self_collision_kin_config.collision_pairs,
             self._block_batch_max_value,
             self._block_batch_max_index,

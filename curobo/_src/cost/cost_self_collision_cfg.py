@@ -21,5 +21,12 @@ class SelfCollisionCostCfg(BaseCostCfg):
     self_collision_kin_config: Optional[SelfCollisionKinematicsCfg] = None
     store_pair_distance: bool = False
 
+    #: Extra clearance (meters) between two spheres below which the cost becomes active. It is added
+    #: on top of the robot's self-collision buffer, split evenly between the two spheres of a pair.
+    #: Set it on optimizer rollouts only, so that the optimizer keeps a margin that the feasibility
+    #: check does not require: without it, a large weight drives trajectories to exact tangency and
+    #: float noise then flips the binary feasibility metric.
+    activation_distance: float = 0.0
+
     def __post_init__(self):
         return super().__post_init__()
