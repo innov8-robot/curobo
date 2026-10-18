@@ -81,9 +81,15 @@ class RobotCfg:
             data_dict_in = data_dict_in["robot_cfg"]
         data_dict = deepcopy(data_dict_in)
         if isinstance(data_dict["kinematics"], dict):
+            # A saved config (RobotBuilder.save) carries these keys; the arguments of this call take precedence.
+            kinematics_dict = {
+                k: v
+                for k, v in data_dict_in["kinematics"].items()
+                if k not in ("device_cfg", "load_collision_spheres", "num_envs")
+            }
             data_dict["kinematics"] = KinematicsCfg.from_config(
                 KinematicsLoaderCfg(
-                    **data_dict_in["kinematics"],
+                    **kinematics_dict,
                     device_cfg=device_cfg,
                     load_collision_spheres=load_collision_spheres,
                     num_envs=num_envs,

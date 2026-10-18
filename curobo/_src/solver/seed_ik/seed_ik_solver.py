@@ -34,11 +34,6 @@ from curobo._src.util.tensor_util import stable_topk, tensor_repeat_seeds
 from curobo._src.util.torch_util import get_torch_jit_decorator
 from curobo._src.util.warp import init_warp
 
-torch.backends.cudnn.benchmark = True
-
-torch.backends.cuda.matmul.allow_tf32 = True
-torch.backends.cudnn.allow_tf32 = True
-
 from curobo._src.solver.seed_ik.seed_ik_error_calculator import SeedIKErrorCalculator
 from curobo._src.solver.seed_ik.seed_ik_solver_cfg import SeedIKSolverCfg
 from curobo._src.solver.seed_ik.seed_ik_state import SeedIKState
