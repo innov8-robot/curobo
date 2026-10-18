@@ -95,6 +95,10 @@ class TrajOptSolver:
         return self.core.kinematics
 
     @property
+    def attachment_manager(self):
+        return self.core.attachment_manager
+
+    @property
     def transition_model(self):
         return self.core.transition_model
 
