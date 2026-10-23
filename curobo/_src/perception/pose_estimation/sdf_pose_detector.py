@@ -286,16 +286,20 @@ class SDFPoseDetector:
         # Compute initial error
         error = torch.sqrt(sum_sq / (n_valid + 1e-8))
 
+        # JtJ, Jtr, sum_sq and n_valid alias the detector's internal buffers. The GraphExecutor runs the
+        # capture function once while initializing, which rewrites those buffers at the converged pose; the
+        # state copied back into it afterwards then held the initial pose with a near-zero gradient, and
+        # detect_from_points returned its initial pose. Clone them so the state owns its values.
         return SDFRefinementState(
             observed_points=observed_points,
             n_points=n_points,
-            best_position=position,
-            best_quaternion=quaternion,
-            best_error=error.squeeze(),
-            best_sum_sq=sum_sq.squeeze(),
-            best_n_valid=n_valid.squeeze(),
-            best_JtJ=JtJ,
-            best_Jtr=Jtr,
+            best_position=position.clone(),
+            best_quaternion=quaternion.clone(),
+            best_error=error.squeeze().clone(),
+            best_sum_sq=sum_sq.squeeze().clone(),
+            best_n_valid=n_valid.squeeze().clone(),
+            best_JtJ=JtJ.clone(),
+            best_Jtr=Jtr.clone(),
             lambda_damping=self._lambda_damping_init,
             translation_change=self._translation_change_init,
             rotation_change=self._rotation_change_init,

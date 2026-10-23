@@ -162,10 +162,7 @@ class TestSDFCudaGraph:
     def test_cuda_graph_matches_no_graph_result(
         self, box_mesh, test_points
     ):
-        """Test that CUDA graph produces same result as no-graph version.
-
-        THIS TEST CURRENTLY FAILS - graph version doesn't converge properly.
-        """
+        """Test that detect_from_points converges, with and without CUDA graph, to the same pose."""
         transformed_points, gt_pose = test_points
 
         identity = Pose.from_list([0, 0, 0, 1, 0, 0, 0])
@@ -195,6 +192,12 @@ class TestSDFCudaGraph:
         result_graph = detector_graph.detect_from_points(
             transformed_points, initial_pose=identity
         )
+
+        # Both must reach the ground truth: comparing two results alone passed when both returned the
+        # initial pose
+        for result in (result_no_graph, result_graph):
+            pos_error = (result.pose.position.squeeze() - gt_pose.position.squeeze()).norm().item()
+            assert pos_error < 0.001, f"Position error {pos_error*1000:.2f}mm should be < 1mm"
 
         # Errors should be similar (within 10x)
         assert result_graph.alignment_error <= result_no_graph.alignment_error * 2, (
